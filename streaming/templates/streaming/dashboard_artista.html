@@ -1,0 +1,262 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Artista - SoundStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #f3f4f6;
+        }
+        .text-muted {
+            color: #b3b3b3 !important;
+        }
+        .bg-nav {
+            background-color: #080808;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+        }
+        .text-green {
+            color: #1ed760 !important;
+        }
+        .btn-spotify {
+            background: linear-gradient(90deg, #1DB954, #1ed760);
+            color: #fff;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2);
+        }
+        .btn-spotify:hover {
+            background: linear-gradient(90deg, #1ed760, #22e668);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+        }
+        .card-dark {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .card-album {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-album:hover {
+            border-color: rgba(30, 215, 96, 0.5);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(30, 215, 96, 0.15);
+        }
+        .stat-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .stat-box:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-2px);
+        }
+        .sidebar {
+            background-color: #080808;
+            min-height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar .nav-link {
+            color: #b3b3b3;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            border-left-color: rgba(30, 215, 96, 0.5);
+        }
+        .sidebar .nav-link.active-link {
+            background: rgba(30, 215, 96, 0.1) !important;
+            color: #1ed760 !important;
+            border-left: 3px solid #1ed760;
+        }
+        .badge-artist {
+            background: linear-gradient(135deg, #6f3ff5, #8c63ff);
+            color: #fff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 0.35em 0.65em;
+        }
+        .alert-premium {
+            background: rgba(29, 185, 84, 0.08) !important;
+            border: 1px solid rgba(29, 185, 84, 0.2) !important;
+            backdrop-filter: blur(10px);
+            color: #fff !important;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-nav border-bottom border-secondary sticky-top py-2">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-green" href="{% url 'index' %}">
+            <i class="fa-solid fa-compact-disc fa-spin me-2 text-green"></i>SoundStream
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white small">
+                <i class="fa-solid fa-microphone text-green me-1"></i>
+                {{ artista.nombreartistico|default:artista.idpersona.nombre }}
+                <span class="badge badge-artist ms-1">Artista</span>
+            </span>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">Cerrar Sesión</a>
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+<div class="container-fluid px-4 mt-3">
+    {% for message in messages %}
+        <div class="alert alert-premium alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-info text-green me-2"></i>{{ message }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar py-4 px-3">
+            <p class="text-muted small text-uppercase fw-semibold mb-3 ps-1">Panel</p>
+            <ul class="nav flex-column gap-1">
+                <li><a href="{% url 'dashboard_artista' %}" class="nav-link px-3 py-2 active-link">
+                    <i class="fa-solid fa-house me-2"></i>Inicio</a></li>
+                <li><a href="#discografia" class="nav-link px-3 py-2">
+                    <i class="fa-solid fa-record-vinyl me-2"></i>Discografía</a></li>
+                <li><a href="{% url 'artista_editar_perfil' %}" class="nav-link px-3 py-2">
+                    <i class="fa-solid fa-user-pen me-2"></i>Editar Perfil</a></li>
+                <li><a href="{% url 'crear_album' %}" class="nav-link px-3 py-2">
+                    <i class="fa-solid fa-plus me-2"></i>Nuevo Álbum</a></li>
+            </ul>
+        </div>
+
+        <!-- Contenido -->
+        <div class="col-md-9 col-lg-10 py-4 px-4">
+
+            <!-- Header artista -->
+            <div class="card-dark p-4 mb-4 d-flex align-items-center gap-4">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:80px;height:80px;flex-shrink:0;background:linear-gradient(135deg,#1DB954,#6f3ff5);">
+                    <i class="fa-solid fa-microphone text-white fs-2"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h3 class="text-white fw-bold mb-1">{{ artista.nombreartistico|default:artista.idpersona.nombre }}</h3>
+                    <p class="text-muted small mb-2">{{ artista.idpersona.nombre }} {{ artista.idpersona.apellido }}
+                        &nbsp;·&nbsp; {{ artista.idpersona.paisorigen|default:"Sin especificar" }}</p>
+                    <a href="{% url 'artista_editar_perfil' %}" class="btn btn-sm btn-outline-light rounded-pill px-3" style="font-size:.8rem;">
+                        <i class="fa-solid fa-pen me-1"></i>Editar perfil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="row g-3 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-box text-center">
+                        <i class="fa-solid fa-headphones text-green fs-3 mb-2 d-block"></i>
+                        <h4 class="text-white fw-bold mb-0">{{ artista.oyentesmensuales|default:0 }}</h4>
+                        <p class="text-muted small mb-0">Oyentes mensuales</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box text-center">
+                        <i class="fa-solid fa-record-vinyl text-green fs-3 mb-2 d-block"></i>
+                        <h4 class="text-white fw-bold mb-0">{{ albums|length }}</h4>
+                        <p class="text-muted small mb-0">Álbumes publicados</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-box text-center">
+                        <i class="fa-solid fa-music text-green fs-3 mb-2 d-block"></i>
+                        <h4 class="text-white fw-bold mb-0">{{ total_canciones }}</h4>
+                        <p class="text-muted small mb-0">Canciones totales</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discografía -->
+            <section id="discografia">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-white fw-bold m-0"><i class="fa-solid fa-record-vinyl text-green me-2"></i>Mi Discografía</h5>
+                    <a href="{% url 'crear_album' %}" class="btn btn-spotify btn-sm px-3">
+                        <i class="fa-solid fa-plus me-1"></i>Nuevo Álbum
+                    </a>
+                </div>
+
+                {% if albums %}
+                    <div class="row g-3">
+                        {% for album in albums %}
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card-album p-3 h-100">
+                                <div class="mb-3 text-center">
+                                    <i class="fa-solid fa-compact-disc text-green" style="font-size:2.5rem;"></i>
+                                </div>
+                                <h6 class="text-white fw-semibold mb-1">{{ album.nombrealbum }}</h6>
+                                <p class="text-muted small mb-3">
+                                    <i class="fa-solid fa-calendar-days me-1"></i>
+                                    {{ album.fechalanzamiento|default:"Sin fecha" }}
+                                </p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="{% url 'album_canciones' album.idalbum %}" class="btn btn-spotify btn-sm px-2" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-music me-1"></i>Canciones
+                                    </a>
+                                    <a href="{% url 'editar_album' album.idalbum %}" class="btn btn-sm btn-outline-warning rounded-pill px-2" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form action="{% url 'eliminar_album' album.idalbum %}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('¿Eliminar el álbum «{{ album.nombrealbum }}» y todas sus canciones?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" style="font-size:.75rem;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="card-dark p-5 text-center">
+                        <i class="fa-solid fa-record-vinyl text-muted" style="font-size:3rem;"></i>
+                        <p class="text-muted mt-3">Aún no tienes álbumes. ¡Crea el primero!</p>
+                        <a href="{% url 'crear_album' %}" class="btn btn-spotify px-4">
+                            <i class="fa-solid fa-plus me-2"></i>Crear álbum
+                        </a>
+                    </div>
+                {% endif %}
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

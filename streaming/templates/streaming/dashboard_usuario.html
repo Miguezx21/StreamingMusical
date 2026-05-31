@@ -1,0 +1,298 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Música - SoundStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #f3f4f6;
+        }
+        .text-muted {
+            color: #b3b3b3 !important;
+        }
+        .bg-nav {
+            background-color: #080808;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+        }
+        .text-green {
+            color: #1ed760 !important;
+        }
+        .btn-spotify {
+            background: linear-gradient(90deg, #1DB954, #1ed760);
+            color: #fff;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2);
+        }
+        .btn-spotify:hover {
+            background: linear-gradient(90deg, #1ed760, #22e668);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+        }
+        .card-dark {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .card-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(30, 215, 96, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 215, 96, 0.1);
+        }
+        .table-custom {
+            --bs-table-bg: transparent;
+            --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+            color: #f3f4f6;
+            border-color: rgba(255,255,255,0.08);
+        }
+        .table-custom thead th {
+            color: #b3b3b3 !important;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        .badge-sub {
+            background: linear-gradient(135deg, #1DB954, #1ed760);
+            color: #000;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .sidebar {
+            background-color: #080808;
+            min-height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar .nav-link {
+            color: #b3b3b3;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.03);
+            border-left-color: rgba(30, 215, 96, 0.5);
+        }
+        .sidebar .nav-link.active-link {
+            background: rgba(30, 215, 96, 0.1) !important;
+            color: #1ed760 !important;
+            border-left: 3px solid #1ed760;
+        }
+        .alert-premium {
+            background: rgba(29, 185, 84, 0.08) !important;
+            border: 1px solid rgba(29, 185, 84, 0.2) !important;
+            backdrop-filter: blur(10px);
+            color: #fff !important;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-nav border-bottom border-secondary sticky-top py-2">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-green" href="{% url 'index' %}">
+            <i class="fa-solid fa-compact-disc fa-spin me-2 text-green"></i>SoundStream
+        </a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-white small"><i class="fa-solid fa-circle-user text-green me-1"></i>{{ persona.nombre }} {{ persona.apellido }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">Cerrar Sesión</a>
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+<div class="container-fluid px-4 mt-3">
+    {% for message in messages %}
+        <div class="alert alert-premium alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-info text-green me-2"></i>{{ message }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar py-4 px-3">
+            <p class="text-muted small text-uppercase fw-semibold mb-3 ps-1">Menú</p>
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a href="{% url 'dashboard_usuario' %}" class="nav-link px-3 py-2 active-link">
+                        <i class="fa-solid fa-house me-2"></i>Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#playlists" class="nav-link px-3 py-2">
+                        <i class="fa-solid fa-list me-2"></i>Mis Playlists
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#catalogo" class="nav-link px-3 py-2">
+                        <i class="fa-solid fa-music me-2"></i>Catálogo
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#artistas" class="nav-link px-3 py-2">
+                        <i class="fa-solid fa-star me-2"></i>Artistas
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9 col-lg-10 py-4 px-4">
+
+            <!-- Perfil / suscripción -->
+            <div class="card-dark p-4 mb-4 d-flex align-items-center gap-4">
+                <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center"
+                     style="width:70px;height:70px;flex-shrink:0;">
+                    <i class="fa-solid fa-user text-green fs-2"></i>
+                </div>
+                <div>
+                    <h4 class="text-white fw-bold mb-0">{{ persona.nombre }} {{ persona.apellido }}</h4>
+                    <p class="text-muted small mb-1">📍 {{ persona.paisorigen|default:"Sin especificar" }}
+                        &nbsp;·&nbsp; ✉️ {{ usuario.email }}</p>
+                    <span class="badge badge-sub px-3 py-1">
+                        {% if usuario.idtiposuscripcion %}{{ usuario.idtiposuscripcion.nombretipo }}{% else %}Gratuito{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Mis Playlists -->
+            <section id="playlists" class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="text-white fw-bold m-0"><i class="fa-solid fa-list text-green me-2"></i>Mis Playlists</h5>
+                    <a href="{% url 'crear_playlist' %}" class="btn btn-spotify btn-sm px-3">
+                        <i class="fa-solid fa-plus me-1"></i>Nueva Playlist
+                    </a>
+                </div>
+
+                {% if playlists %}
+                    <div class="row g-3">
+                        {% for pl in playlists %}
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card-item p-3 h-100">
+                                <i class="fa-solid fa-music text-green fs-4 mb-2 d-block"></i>
+                                <h6 class="text-white fw-semibold mb-1">{{ pl.nombreplaylist }}</h6>
+                                <div class="d-flex gap-2 mt-2 flex-wrap">
+                                    <a href="{% url 'playlist_detalle' pl.idplaylist %}" class="btn btn-spotify btn-sm px-2 py-1" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-eye me-1"></i>Ver
+                                    </a>
+                                    <a href="{% url 'editar_playlist' pl.idplaylist %}" class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form action="{% url 'eliminar_playlist' pl.idplaylist %}" method="POST" class="d-inline"
+                                          onsubmit="return confirm('¿Eliminar la playlist «{{ pl.nombreplaylist }}»?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" style="font-size:.75rem;">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">Aún no tienes playlists. ¡Crea una!</p>
+                {% endif %}
+            </section>
+
+            <!-- Catálogo de canciones -->
+            <section id="catalogo" class="mb-5">
+                <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-compact-disc text-green me-2"></i>Catálogo de Canciones</h5>
+                <div class="card-dark p-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom align-middle m-0">
+                            <thead>
+                                <tr class="text-muted small border-bottom border-secondary">
+                                    <th>#</th>
+                                    <th>Canción</th>
+                                    <th>Álbum</th>
+                                    <th>Artista</th>
+                                    <th>Género</th>
+                                    <th>Duración</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in canciones %}
+                                <tr class="border-bottom border-secondary">
+                                    <td class="text-muted small">{{ forloop.counter }}</td>
+                                    <td class="text-white fw-semibold">{{ c.nombrecancion }}</td>
+                                    <td class="text-muted small">{{ c.idalbum.nombrealbum|default:"—" }}</td>
+                                    <td class="text-muted small">
+                                        {% if c.idalbum.idartista %}{{ c.idalbum.idartista.idpersona.nombre }}{% else %}—{% endif %}
+                                    </td>
+                                    <td class="text-muted small">{{ c.idgenero.nombregenero|default:"—" }}</td>
+                                    <td class="text-muted small">{{ c.duracion|time:"i:s"|default:"—" }}</td>
+                                    <td>
+                                        <form action="{% url 'registrar_escucha' c.idcancion %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-spotify btn-sm px-3" style="font-size:.75rem;">
+                                                <i class="fa-solid fa-play"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="7" class="text-muted text-center py-3">No hay canciones disponibles.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Artistas -->
+            <section id="artistas" class="mb-5">
+                <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-star text-green me-2"></i>Artistas en la Plataforma</h5>
+                <div class="row g-3">
+                    {% for a in artistas %}
+                    <div class="col-md-3 col-sm-4 col-6">
+                        <div class="card-item p-3 text-center">
+                            <div class="rounded-circle bg-dark border border-secondary d-inline-flex align-items-center justify-content-center mb-2"
+                                 style="width:55px;height:55px;">
+                                <i class="fa-solid fa-microphone text-green"></i>
+                            </div>
+                            <h6 class="text-white fw-semibold mb-0" style="font-size:.9rem;">{{ a.nombreartistico|default:a.idpersona.nombre }}</h6>
+                            <p class="text-muted" style="font-size:.75rem;">{{ a.oyentesmensuales|default:0 }} oyentes/mes</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <p class="text-muted small">No hay artistas registrados.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

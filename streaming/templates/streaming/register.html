@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - SoundStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #121212; color: #fff; }
+        .text-muted { color: #b3b3b3 !important; }
+        .card-spotify { background-color: #181818; border: 1px solid #282828; border-radius: 12px; }
+        .form-control-spotify, .form-select-spotify {
+            background-color: #2a2a2a; border: 1px solid #3e3e3e; color: #f3f4f6;
+        }
+        .form-control-spotify::placeholder { color: #9ca3af; opacity: 1; }
+        .form-control-spotify:focus::placeholder { color: #6b7280; }
+        .form-control-spotify:focus, .form-select-spotify:focus {
+            background-color: #333; border-color: #1DB954; color: #fff;
+            box-shadow: 0 0 0 3px rgba(29,185,84,.12);
+        }
+        .form-select-spotify { color: #9ca3af; }
+        .form-select-spotify option { background: #2a2a2a; color: #f3f4f6; }
+        .btn-spotify { background-color: #1DB954; color: #fff; border-radius: 50px; font-weight: 600; border: none; }
+        .btn-spotify:hover { background-color: #1ed760; color: #fff; }
+        .text-spotify-green { color: #1DB954; }
+        label, .form-label { color: #d0d0d0 !important; font-size: 0.88rem; font-weight: 500; }
+        .tipo-selector label { color: #fff; font-size: 1rem; cursor: pointer; }
+        .tipo-card {
+            background: #242424; border: 2px solid #3e3e3e; border-radius: 10px;
+            padding: 1.2rem; cursor: pointer; transition: all .2s; color: #fff;
+        }
+        .tipo-card:hover { border-color: #1DB954; background: #2a2a2a; }
+        .tipo-card.selected { border-color: #1DB954; background: #1a3322; }
+        .tipo-card .tipo-titulo { color: #ffffff; font-weight: 700; font-size: 1rem; display: block; margin-bottom: 4px; }
+        .tipo-card p { color: #b3b3b3; }
+        .invalid-feedback { display: block; color: #ff4d4d; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dark border-secondary text-white alert-dismissible fade show mx-auto mb-4" style="max-width:650px;" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card card-spotify p-4 p-md-5 shadow">
+
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-white">Crear cuenta</h2>
+                    <p class="text-muted small">Únete a SoundStream gratis</p>
+                </div>
+
+                <form method="POST" id="registerForm">
+                    {% csrf_token %}
+
+                    <!-- Tipo de cuenta -->
+                    <div class="mb-4">
+                        <p class="text-muted small mb-2">¿Qué tipo de cuenta quieres crear?</p>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="tipo-card text-center selected" id="card-usuario" onclick="selectTipo('usuario')">
+                                    <i class="fa-solid fa-headphones text-spotify-green fs-3 mb-2 d-block"></i>
+                                    <span class="tipo-titulo">Usuario</span>
+                                    <p class="mb-0" style="font-size:.82rem;color:#b3b3b3;">Escucha música y gestiona tus playlists</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="tipo-card text-center" id="card-artista" onclick="selectTipo('artista')">
+                                    <i class="fa-solid fa-microphone text-spotify-green fs-3 mb-2 d-block"></i>
+                                    <span class="tipo-titulo">Artista</span>
+                                    <p class="mb-0" style="font-size:.82rem;color:#b3b3b3;">Sube tu música y gestiona tu discografía</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="tipo_cuenta" id="tipo_cuenta" value="usuario">
+                        {% if form.tipo_cuenta.errors %}
+                            <div class="invalid-feedback">{{ form.tipo_cuenta.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Datos personales -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre *</label>
+                            <input type="text" name="nombre" class="form-control form-control-spotify" required
+                                   value="{{ form.nombre.value|default:'' }}" maxlength="25">
+                            {% if form.nombre.errors %}<div class="invalid-feedback">{{ form.nombre.errors|join:", " }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido *</label>
+                            <input type="text" name="apellido" class="form-control form-control-spotify" required
+                                   value="{{ form.apellido.value|default:'' }}" maxlength="25">
+                            {% if form.apellido.errors %}<div class="invalid-feedback">{{ form.apellido.errors|join:", " }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico *</label>
+                        <input type="email" name="email" class="form-control form-control-spotify" required
+                               value="{{ form.email.value|default:'' }}" maxlength="100">
+                        {% if form.email.errors %}<div class="invalid-feedback">{{ form.email.errors|join:", " }}</div>{% endif %}
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Contraseña * (mínimo 6 caracteres)</label>
+                            <input type="password" name="password" class="form-control form-control-spotify" required minlength="6">
+                            {% if form.password.errors %}<div class="invalid-feedback">{{ form.password.errors|join:", " }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirmar contraseña *</label>
+                            <input type="password" name="confirmar_password" class="form-control form-control-spotify" required>
+                            {% if form.confirmar_password.errors %}<div class="invalid-feedback">{{ form.confirmar_password.errors|join:", " }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Género</label>
+                            <select name="genero" class="form-control form-control-spotify form-select-spotify">
+                                <option value="">-- Selecciona --</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">País de origen</label>
+                            <input type="text" name="pais_origen" class="form-control form-control-spotify"
+                                   value="{{ form.pais_origen.value|default:'' }}" maxlength="25">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Fecha de nacimiento</label>
+                            <input type="date" name="fecha_nacimiento" class="form-control form-control-spotify"
+                                   value="{{ form.fecha_nacimiento.value|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- Campo solo para artistas -->
+                    <div id="artistaFields" style="display:none;" class="mb-3">
+                        <label class="form-label text-spotify-green fw-semibold">Nombre artístico *</label>
+                        <input type="text" name="nombre_artistico" id="nombre_artistico"
+                               class="form-control form-control-spotify"
+                               value="{{ form.nombre_artistico.value|default:'' }}" maxlength="100"
+                               placeholder="El nombre con el que te conoce tu público">
+                        {% if form.nombre_artistico.errors %}<div class="invalid-feedback">{{ form.nombre_artistico.errors|join:", " }}</div>{% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:"<br>" }}</div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-spotify w-100 py-2 mt-2">Crear cuenta</button>
+                </form>
+
+                <hr class="border-secondary my-3">
+                <div class="text-center">
+                    <span class="text-muted small">¿Ya tienes cuenta? </span>
+                    <a href="{% url 'login' %}" class="text-spotify-green text-decoration-none small fw-semibold">Inicia sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function selectTipo(tipo) {
+    document.getElementById('tipo_cuenta').value = tipo;
+    document.getElementById('card-usuario').classList.toggle('selected', tipo === 'usuario');
+    document.getElementById('card-artista').classList.toggle('selected', tipo === 'artista');
+    const artistaFields = document.getElementById('artistaFields');
+    const nombreArtistico = document.getElementById('nombre_artistico');
+    if (tipo === 'artista') {
+        artistaFields.style.display = 'block';
+        nombreArtistico.required = true;
+    } else {
+        artistaFields.style.display = 'none';
+        nombreArtistico.required = false;
+    }
+}
+
+// Restaurar selección si hay errores de validación
+document.addEventListener('DOMContentLoaded', function() {
+    const tipoActual = '{{ form.tipo_cuenta.value|default:"usuario" }}';
+    if (tipoActual) selectTipo(tipoActual);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+/* --- Estilos Base y Tipografía --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.bg-spotify-dark { background-color: #070707; }
+
+/* --- Enlaces y Textos Especiales --- */
+.text-spotify-green { 
+    color: #1DB954; 
+    transition: color 0.2s ease;
+}
+.text-spotify-green:hover { 
+    color: #1ed760; 
+    text-decoration: underline !important;
+}
+
+.text-muted-custom {
+    color: #b3b3b3 !important;
+}
+
+/* --- Tarjeta Contenedora --- */
+.card-spotify {
+    background-color: #181818;
+    border: 1px solid #282828;
+    border-radius: 12px;
+}
+
+/* --- Formularios e Inputs --- */
+.form-label {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.form-control-spotify {
+    background-color: #242424 !important;
+    border: 1px solid #3e3e3e !important;
+    color: #ffffff !important;
+    border-radius: 6px;
+}
+
+.form-control-spotify:focus {
+    border-color: #1DB954 !important;
+    box-shadow: 0 0 0 0.25rem rgba(29, 185, 84, 0.25) !important;
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+
+/* Marcadores de posición (Placeholders) */
+.form-control-spotify::placeholder {
+    color: #a0a0a0 !important;
+}
+
+/* --- Botones Custom --- */
+.btn-spotify {
+    background-color: #1DB954;
+    color: #ffffff;
+    border-radius: 50px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-spotify:hover {
+    background-color: #1ed760;
+    color: #ffffff;
+    transform: scale(1.02); /* Un ligero efecto de escala estilo Spotify */
+}
+
+/* Solución para el padding intermedio que querías en el botón */
+.py-2-5 {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+}

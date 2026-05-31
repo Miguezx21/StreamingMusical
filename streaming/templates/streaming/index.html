@@ -157,7 +157,7 @@
                                         <div class="p-3 bg-dark rounded border border-secondary d-flex align-items-center justify-content-between">
                                             <div>
                                                 <h6 class="text-white fw-bold mb-1 text-truncate" style="max-width: 200px;">{{ cancion.nombrecancion }}</h6>
-                                                <p class="small text-muted-custom mb-0">💿 {{ cancion.album }} • ⏱️ {{ cancion.duracion }}</p>
+                                                <p class="small text-muted-custom mb-0">💿 {{ cancion.album }} • ⏱️ {{ cancion.duracion|time:"i:s" }}</p>
                                             </div>
                                             <form action="{% url 'registrar_escucha' cancion.idcancion %}" method="POST">
                                                 {% csrf_token %}

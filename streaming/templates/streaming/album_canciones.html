@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ album.nombrealbum }} - SoundStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #121212; color: #f3f4f6; }
+        .bg-nav { background-color: #080808; }
+        .text-green { color: #1ed760; }
+        .text-muted { color: #9ca3af !important; }
+        .btn-spotify { background: linear-gradient(90deg,#1DB954,#1ed760); color: #fff; border-radius: 50px; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(29,185,84,.2); }
+        .btn-spotify:hover { background: linear-gradient(90deg,#1ed760,#22e668); color: #fff; transform: translateY(-1px); }
+        .card-dark { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+        /* Tabla */
+        .table-custom {
+            --bs-table-bg: transparent;
+            --bs-table-hover-bg: rgba(255,255,255,.03);
+            color: #f3f4f6;
+            border-color: rgba(255,255,255,.08);
+        }
+        .table-custom thead th { color: #9ca3af !important; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid rgba(255,255,255,.1); }
+        .table-custom tbody td { color: #e5e7eb; vertical-align: middle; border-color: rgba(255,255,255,.05); }
+        .table-custom tbody td.td-secondary { color: #9ca3af; font-size: .85rem; }
+        /* Alertas glassmorphism */
+        .alert-glass {
+            background: rgba(29,185,84,.1) !important;
+            border: 1px solid rgba(29,185,84,.25) !important;
+            color: #d1fae5 !important;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-nav border-bottom border-secondary sticky-top py-2">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-green" href="{% url 'index' %}">
+            <i class="fa-solid fa-compact-disc fa-spin me-2"></i>SoundStream
+        </a>
+        <div class="d-flex gap-3">
+            <a href="{% url 'dashboard_artista' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i>Mi Panel
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">Salir</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-glass alert-dismissible fade show mb-4" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i>{{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Cabecera álbum -->
+    <div class="d-flex align-items-center gap-4 mb-5">
+        <div class="rounded d-flex align-items-center justify-content-center"
+             style="width:100px;height:100px;flex-shrink:0;background:linear-gradient(135deg,#6f3ff5,#1DB954);">
+            <i class="fa-solid fa-compact-disc text-white" style="font-size:2.5rem;"></i>
+        </div>
+        <div>
+            <p class="text-muted small mb-0">Álbum</p>
+            <h2 class="text-white fw-bold mb-1">{{ album.nombrealbum }}</h2>
+            <p class="text-muted small mb-0">
+                <i class="fa-solid fa-calendar-days me-1"></i>{{ album.fechalanzamiento|default:"Sin fecha" }}
+                &nbsp;·&nbsp; {{ canciones|length }} pista{{ canciones|length|pluralize:"s" }}
+            </p>
+        </div>
+        <div class="ms-auto">
+            <a href="{% url 'crear_cancion' album.idalbum %}" class="btn btn-spotify px-4">
+                <i class="fa-solid fa-plus me-2"></i>Agregar canción
+            </a>
+        </div>
+    </div>
+
+    <!-- Lista de canciones -->
+    <div class="card-dark p-3">
+        {% if canciones %}
+        <div class="table-responsive">
+            <table class="table table-hover table-custom align-middle m-0">
+                <thead>
+                    <tr class="text-muted small border-bottom border-secondary">
+                        <th>#</th>
+                        <th>Canción</th>
+                        <th>Género</th>
+                        <th>Duración</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in canciones %}
+                    <tr>
+                        <td class="td-secondary">{{ forloop.counter }}</td>
+                        <td style="color:#fff;font-weight:600;">{{ c.nombrecancion }}</td>
+                        <td class="td-secondary">{{ c.idgenero.nombregenero|default:"—" }}</td>
+                        <td class="td-secondary">{{ c.duracion|time:"i:s"|default:"—" }}</td>
+                        <td class="text-center">
+                            <div class="d-flex gap-2 justify-content-center">
+                                <a href="{% url 'editar_cancion' c.idcancion %}" class="btn btn-sm btn-outline-warning rounded-pill px-3" style="font-size:.75rem;">
+                                    <i class="fa-solid fa-pen me-1"></i>Editar
+                                </a>
+                                <form action="{% url 'eliminar_cancion' c.idcancion %}" method="POST" class="d-inline"
+                                      onsubmit="return confirm('¿Eliminar «{{ c.nombrecancion }}»?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2" style="font-size:.75rem;">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-music text-muted" style="font-size:3rem;"></i>
+                <p class="text-muted mt-3">Este álbum no tiene canciones todavía.</p>
+                <a href="{% url 'crear_cancion' album.idalbum %}" class="btn btn-spotify px-4">
+                    <i class="fa-solid fa-plus me-2"></i>Agregar la primera canción
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

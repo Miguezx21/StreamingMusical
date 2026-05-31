@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ accion }} Canción - SoundStream</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #121212; color: #fff; }
+        .card-spotify { background-color: #181818; border: 1px solid #282828; border-radius: 12px; }
+        .form-control-spotify, .form-select-spotify {
+            background-color: #2a2a2a; border: 1px solid #3e3e3e; color: #f3f4f6;
+        }
+        .form-control-spotify::placeholder { color: #9ca3af; opacity: 1; }
+        .form-control-spotify:focus::placeholder { color: #6b7280; }
+        .form-control-spotify:focus, .form-select-spotify:focus {
+            background-color: #333; border-color: #1DB954; color: #fff;
+            box-shadow: 0 0 0 3px rgba(29,185,84,.12);
+        }
+        .form-select-spotify option { background: #2a2a2a; color: #f3f4f6; }
+        .btn-spotify { background-color: #1DB954; color: #fff; border-radius: 50px; font-weight: 600; border: none; }
+        .btn-spotify:hover { background-color: #1ed760; color: #fff; }
+        .text-green { color: #1DB954; }
+        label { color: #b3b3b3; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-dark border-secondary text-white alert-dismissible fade show mx-auto mb-4" style="max-width:600px;" role="alert">
+                {{ message }}<button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card-spotify p-5 shadow">
+                <div class="mb-4">
+                    {% if album %}
+                    <a href="{% url 'album_canciones' album.idalbum %}" class="text-green text-decoration-none small">
+                        <i class="fa-solid fa-arrow-left me-1"></i>Volver a {{ album.nombrealbum }}
+                    </a>
+                    {% endif %}
+                    <h3 class="fw-bold text-white mt-2 mb-0">
+                        <i class="fa-solid fa-music text-green me-2"></i>{{ accion }} Canción
+                    </h3>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la canción *</label>
+                        <input type="text" name="nombre_cancion" class="form-control form-control-spotify" required
+                               maxlength="100" value="{{ form.nombre_cancion.value|default:'' }}"
+                               placeholder="Ej: Tu Mirada (feat. Alguien)">
+                        {% if form.nombre_cancion.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre_cancion.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Duración (HH:MM:SS) *</label>
+                        <input type="text" name="duracion" class="form-control form-control-spotify" required
+                               maxlength="8" value="{{ form.duracion.value|default:'' }}"
+                               placeholder="00:03:45" pattern="\d{2}:\d{2}:\d{2}">
+                        <div class="text-muted" style="font-size:.75rem;">Formato: 00:03:45</div>
+                        {% if form.duracion.errors %}
+                            <div class="text-danger small mt-1">{{ form.duracion.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Álbum *</label>
+                        <select name="id_album" class="form-control form-control-spotify form-select-spotify" required>
+                            {% for value, label in form.id_album.field.choices %}
+                                <option value="{{ value }}"
+                                    {% if form.id_album.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Género *</label>
+                        <select name="id_genero" class="form-control form-control-spotify form-select-spotify" required>
+                            {% for value, label in form.id_genero.field.choices %}
+                                <option value="{{ value }}"
+                                    {% if form.id_genero.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger py-2 small">{{ form.non_field_errors|join:"<br>" }}</div>
+                    {% endif %}
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-spotify px-4 py-2">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>{{ accion }} Canción
+                        </button>
+                        {% if album %}
+                        <a href="{% url 'album_canciones' album.idalbum %}" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+                        {% else %}
+                        <a href="{% url 'dashboard_artista' %}" class="btn btn-outline-secondary rounded-pill px-4">Cancelar</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
