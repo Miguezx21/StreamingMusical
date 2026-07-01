@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls), # Ruta del administrador por defecto
     path('', include('streaming.urls')), # Conectamos nuestra aplicación musical como raíz del sitio
+    path('mongo/', include('streaming_mongo.urls')),
 ]

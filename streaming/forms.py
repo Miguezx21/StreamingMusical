@@ -101,3 +101,7 @@ class CancionForm(forms.Form):
 
 class PlaylistForm(forms.Form):
     nombre_playlist = forms.CharField(max_length=100, label='Nombre de la playlist')
+    descripcion = forms.CharField(
+        max_length=255, label='Descripción', required=False,
+        widget=forms.Textarea(attrs={'rows': 3}),
+    )

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundStream - Reporte Técnico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-success" href="{% url 'mongo:index' %}">🎵 SoundStream</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'mongo:index' %}">Inicio</a>
+                <a class="nav-link active btn btn-outline-success btn-sm text-white px-3 ms-2" href="{% url 'mongo:reporte_artista' %}">📊 Reporte de Artistas</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h2 class="card-title fw-bold text-secondary mb-3">📊 Generador de Reporte por Artista</h2>
+                <p class="text-muted">Selecciona un artista para ejecutar el procedimiento almacenado <code>CancionesLogica.sp_ReporteCancionesArtista</code> en tiempo real.</p>
+                
+                <form method="GET" class="row g-3 align-items-center mt-2">
+                    <div class="col-sm-8 col-md-6">
+                        <select name="artista_id" class="form-select form-select-lg border-success" required>
+                            <option value="">-- Elige un Artista disponible --</option>
+                            {% for artista in artistas %}
+                                <option value="{{ artista.idartista }}" {% if artista_seleccionado == artista.idartista %}selected{% endif %}>
+                                    {{ artista.nombreartistico }} (ID: {{ artista.idartista }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="submit" class="btn btn-success btn-lg px-4">⚡ Consultar Servidor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if artista_seleccionado %}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white p-3">
+                    <h4 class="m-0 fw-semibold">📋 Resultados para: <span class="text-success">{{ nombre_artista }}</span></h4>
+                </div>
+                <div class="card-body p-0">
+                    {% if reporte_datos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped m-0 align-middle">
+                                <thead class="table-light text-secondary text-uppercase small font-weight-bold">
+                                    <tr>
+                                        <th class="ps-4">Artista</th>
+                                        <th>Álbum de Origen</th>
+                                        <th>Nombre de la Pista</th>
+                                        <th class="pe-4 text-end">Duración</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fila in reporte_datos %}
+                                        <tr>
+                                            <td class="ps-4 font-weight-bold fw-medium">{{ fila.nombreArtistico }}</td>
+                                            <td><span class="badge bg-secondary p-2">{{ fila.nombreAlbum }}</span></td>
+                                            <td class="text-dark fw-semibold">{{ fila.nombreCancion }}</td>
+                                            <td class="pe-4 text-end text-success fw-bold">{{ fila.duracion }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="p-5 text-center text-muted">
+                            <h5>El procedimiento no retornó registros para este ID de artista.</h5>
+                            <p class="small m-0">Verifica que tenga álbumes y canciones asociadas en las tablas correspondientes.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

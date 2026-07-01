@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundStream - Consola Musical</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .bg-spotify-dark { background-color: #070707; }
+        .text-spotify-green { color: #1DB954; }
+        .btn-spotify {
+            background-color: #1DB954;
+            color: #ffffff;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .btn-spotify:hover {
+            background-color: #1ed760;
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+        .card-spotify {
+            background-color: #181818;
+            border: 1px solid #282828;
+            border-radius: 12px;
+        }
+        .table-dark {
+            --bs-table-bg: #181818;
+            --bs-table-striped-bg: #1f1f1f;
+            --bs-table-hover-bg: #252525;
+            color: #ffffff;
+            border-color: #282828;
+        }
+        .text-muted-custom { color: #a7a7a7; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-spotify-dark border-bottom border-secondary sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-spotify-green fs-4" href="{% url 'mongo:index' %}">
+                <i class="fa-solid fa-compact-disc fa-spin me-2 text-spotify-green"></i>SoundStream
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                {% if request.session.usuario_id %}
+                    <span class="text-white small fw-medium">
+                        <i class="fa-solid fa-circle-user text-spotify-green me-1"></i>{{ request.session.usuario_nombre }}
+                        {% if es_admin %}<span class="badge bg-danger ms-1">Admin</span>{% endif %}
+                    </span>
+                    <a href="{% url 'mongo:logout' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{% url 'mongo:login' %}" class="btn btn-sm btn-spotify px-4">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-dark border-success text-white alert-dismissible fade show shadow mb-4" role="alert">
+                    <i class="fa-solid fa-bolt text-spotify-green me-2"></i>{{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if request.session.usuario_id %}
+            
+            {% if es_admin %}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="fw-bold text-white m-0">Consola de Administración General</h1>
+                        <p class="text-muted-custom small mb-0">Control total CRUD sobre las identidades del Esquema Persona.</p>
+                    </div>
+                    <a href="{% url 'mongo:crear_persona' %}" class="btn btn-spotify px-4 shadow">
+                        <i class="fa-solid fa-user-plus me-2"></i>Registrar Nuevo Usuario
+                    </a>
+                </div>
+
+                <div class="card card-spotify p-4 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-hover align-middle m-0">
+                            <thead>
+                                <tr class="text-muted-custom small border-bottom border-secondary">
+                                    <th>ID Persona</th>
+                                    <th>Nombre de Usuario</th>
+                                    <th>Apellido</th>
+                                    <th>País Origen</th>
+                                    <th class="text-center">Acciones de Escritura (CRUD)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for persona in personas %}
+                                <tr class="border-bottom border-secondary">
+                                    <td class="fw-bold text-spotify-green">#{{ persona.idpersona }}</td>
+                                    <td class="text-white fw-semibold">{{ persona.nombre }}</td>
+                                    <td>{{ persona.apellido }}</td>
+                                    <td>{{ persona.paisorigen|default:"No registrado" }}</td>
+                                    <td class="text-center">
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <a href="{% url 'mongo:editar_persona' persona.idpersona %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                                                <i class="fa-solid fa-pen me-1"></i> Modificar
+                                            </a>
+                                            <form action="{% url 'mongo:eliminar_persona' persona.idpersona %}" method="POST" onsubmit="return confirm('¿Eliminar permanentemente de SQL Server?');" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                    <i class="fa-solid fa-trash-can"></i> Quitar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card card-spotify p-4 h-100 text-center">
+                            <i class="fa-solid fa-music text-spotify-green display-4 mb-3"></i>
+                            <h3 class="text-white fw-bold">{{ perfil.nombre }} {{ perfil.apellido }}</h3>
+                            <p class="text-muted-custom small mb-4">📍 Residencia: {{ perfil.paisorigen|default:"Ecuador" }}</p>
+                            
+                            <hr class="border-secondary">
+                            
+                            <h5 class="text-white fw-semibold mt-3">Estado de Cuenta</h5>
+                            <div class="p-3 bg-dark rounded border border-secondary my-3">
+                                <p class="small text-muted-custom mb-1">Plan de Suscripción</p>
+                                <span class="badge bg-success text-dark fw-bold px-3 py-2">PREMIUM ACTIVO</span>
+                                <p class="small text-muted-custom mt-2 mb-0">Monto Mensual: $5.99</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card card-spotify p-4 h-100">
+                            <h3 class="text-white fw-bold mb-4"><i class="fa-solid fa-compact-disc text-spotify-green me-2"></i>Tu Catálogo de Canciones Autorizadas</h3>
+                            
+                            <div class="row row-cols-1 row-cols-lg-2 g-3">
+                                {% for cancion in canciones %}
+                                    <div class="col">
+                                        <div class="p-3 bg-dark rounded border border-secondary d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <h6 class="text-white fw-bold mb-1 text-truncate" style="max-width: 200px;">{{ cancion.nombrecancion }}</h6>
+                                                <p class="small text-muted-custom mb-0">💿 {{ cancion.album }} • ⏱️ {{ cancion.duracion|time:"i:s" }}</p>
+                                            </div>
+                                            <form action="{% url 'mongo:registrar_escucha' cancion.idcancion %}" method="POST">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-spotify btn-sm px-3 py-2">
+                                                    <i class="fa-solid fa-play me-1"></i> Escuchar
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="row justify-content-center my-5">
+                <div class="col-md-7 text-center p-5 card card-spotify shadow">
+                    <div class="mb-4">
+                        <span class="p-4 bg-dark rounded-circle d-inline-block border border-secondary">
+                            <i class="fa-solid fa-lock text-spotify-green display-5"></i>
+                        </span>
+                    </div>
+                    <h2 class="fw-bold text-white mb-3">Bienvenido a SoundStream</h2>
+                    <p class="text-muted-custom mx-auto mb-4" style="max-width: 500px;">
+                        Inicia sesión con tu cuenta para acceder a tus playlists personalizadas, controlar tu suscripción o gestionar el catálogo maestro del sistema.
+                    </p>
+                    <a href="{% url 'mongo:login' %}" class="btn btn-spotify px-5 py-2.5 fs-6 shadow">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Ingresar a la Plataforma
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

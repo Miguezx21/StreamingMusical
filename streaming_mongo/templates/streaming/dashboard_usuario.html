@@ -112,12 +112,12 @@
 <!-- Navbar -->
 <nav class="navbar navbar-dark bg-nav border-bottom border-secondary sticky-top py-2">
     <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold text-green" href="{% url 'index' %}">
+        <a class="navbar-brand fw-bold text-green" href="{% url 'mongo:index' %}">
             <i class="fa-solid fa-compact-disc fa-spin me-2 text-green"></i>SoundStream
         </a>
         <div class="d-flex align-items-center gap-3">
             <span class="text-white small"><i class="fa-solid fa-circle-user text-green me-1"></i>{{ persona.nombre }} {{ persona.apellido }}</span>
-            <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">Cerrar Sesión</a>
+            <a href="{% url 'mongo:logout' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">Cerrar Sesión</a>
         </div>
     </div>
 </nav>
@@ -141,7 +141,7 @@
             <p class="text-muted small text-uppercase fw-semibold mb-3 ps-1">Menú</p>
             <ul class="nav flex-column gap-1">
                 <li class="nav-item">
-                    <a href="{% url 'dashboard_usuario' %}" class="nav-link px-3 py-2 active-link">
+                    <a href="{% url 'mongo:dashboard_usuario' %}" class="nav-link px-3 py-2 active-link">
                         <i class="fa-solid fa-house me-2"></i>Inicio
                     </a>
                 </li>
@@ -186,7 +186,7 @@
             <section id="playlists" class="mb-5">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="text-white fw-bold m-0"><i class="fa-solid fa-list text-green me-2"></i>Mis Playlists</h5>
-                    <a href="{% url 'crear_playlist' %}" class="btn btn-spotify btn-sm px-3">
+                    <a href="{% url 'mongo:crear_playlist' %}" class="btn btn-spotify btn-sm px-3">
                         <i class="fa-solid fa-plus me-1"></i>Nueva Playlist
                     </a>
                 </div>
@@ -202,13 +202,13 @@
                                     <p class="text-muted small mb-2 text-truncate">{{ pl.descripcion }}</p>
                                 {% endif %}
                                 <div class="d-flex gap-2 mt-2 flex-wrap">
-                                    <a href="{% url 'playlist_detalle' pl.idplaylist %}" class="btn btn-spotify btn-sm px-2 py-1" style="font-size:.75rem;">
+                                    <a href="{% url 'mongo:playlist_detalle' pl.idplaylist %}" class="btn btn-spotify btn-sm px-2 py-1" style="font-size:.75rem;">
                                         <i class="fa-solid fa-eye me-1"></i>Ver
                                     </a>
-                                    <a href="{% url 'editar_playlist' pl.idplaylist %}" class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1" style="font-size:.75rem;">
+                                    <a href="{% url 'mongo:editar_playlist' pl.idplaylist %}" class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1" style="font-size:.75rem;">
                                         <i class="fa-solid fa-pen"></i>
                                     </a>
-                                    <form action="{% url 'eliminar_playlist' pl.idplaylist %}" method="POST" class="d-inline"
+                                    <form action="{% url 'mongo:eliminar_playlist' pl.idplaylist %}" method="POST" class="d-inline"
                                           onsubmit="return confirm('¿Eliminar la playlist «{{ pl.nombreplaylist }}»?');">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1" style="font-size:.75rem;">
@@ -254,7 +254,7 @@
                                     <td class="text-muted small">{{ c.idgenero.nombregenero|default:"—" }}</td>
                                     <td class="text-muted small">{{ c.duracion|time:"i:s"|default:"—" }}</td>
                                     <td>
-                                        <form action="{% url 'registrar_escucha' c.idcancion %}" method="POST" class="d-inline">
+                                        <form action="{% url 'mongo:registrar_escucha' c.idcancion %}" method="POST" class="d-inline">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-spotify btn-sm px-3" style="font-size:.75rem;">
                                                 <i class="fa-solid fa-play"></i>

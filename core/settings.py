@@ -93,7 +93,7 @@ DATABASES = {
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
             'connection_timeout': 30,
-            # 2. CORRECCIÓN: Emparejamos el cifrado con la configuración activa de tu imagen (Mandatory / True)
+            # Emparejamos el cifrado con la configuración por defecto (Mandatory) del driver 18
             'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;',
         },
     }

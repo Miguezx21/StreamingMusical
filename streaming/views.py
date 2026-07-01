@@ -345,8 +345,8 @@ def crear_playlist_view(request):
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "INSERT INTO Playlists.Playlist (nombrePlaylist, idUsuario) VALUES (%s, %s)",
-                    [form.cleaned_data['nombre_playlist'], usuario_id]
+                    "INSERT INTO Playlists.Playlist (nombrePlaylist, descripcion, idUsuario) VALUES (%s, %s, %s)",
+                    [form.cleaned_data['nombre_playlist'], form.cleaned_data['descripcion'], usuario_id]
                 )
             messages.success(request, "Playlist creada.")
             return redirect('dashboard_usuario')
@@ -367,14 +367,17 @@ def editar_playlist_view(request, pk):
         messages.error(request, "Playlist no encontrada.")
         return redirect('dashboard_usuario')
 
-    form = PlaylistForm(request.POST or None, initial={'nombre_playlist': playlist.nombreplaylist})
+    form = PlaylistForm(request.POST or None, initial={
+        'nombre_playlist': playlist.nombreplaylist,
+        'descripcion': playlist.descripcion,
+    })
 
     if request.method == 'POST' and form.is_valid():
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE Playlists.Playlist SET nombrePlaylist = %s WHERE idPlaylist = %s",
-                    [form.cleaned_data['nombre_playlist'], pk]
+                    "UPDATE Playlists.Playlist SET nombrePlaylist = %s, descripcion = %s WHERE idPlaylist = %s",
+                    [form.cleaned_data['nombre_playlist'], form.cleaned_data['descripcion'], pk]
                 )
             messages.success(request, "Playlist actualizada.")
             return redirect('dashboard_usuario')

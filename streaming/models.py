@@ -104,6 +104,7 @@ class Cancion(models.Model):
 class Playlist(models.Model):
     idplaylist = models.AutoField(db_column='idPlaylist', primary_key=True)
     nombreplaylist = models.CharField(db_column='nombrePlaylist', max_length=100, blank=True, null=True)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
     idusuario = models.ForeignKey(Usuario, db_column='idUsuario', on_delete=models.CASCADE)
 
     class Meta:
